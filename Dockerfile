@@ -3,7 +3,7 @@ FROM runpod/worker-comfyui:5.5.1-base
 
 # ── 1. 시스템 의존성 ──────────────────────────────────────────
 RUN pip install --no-cache-dir \
-    insightface \
+    insightface==0.7.3 \
     onnxruntime-gpu \
     facexlib \
     ultralytics \
