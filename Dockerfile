@@ -34,6 +34,10 @@ RUN git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
 RUN git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
     /comfyui/custom_nodes/ComfyUI-Impact-Subpack || true
 
+RUN git clone --depth=1 https://github.com/exx8/differential-diffusion \
+    /comfyui/custom_nodes/differential-diffusion
+    
+
 # ImageMultiply / ImageSubtract 커스텀 노드
 COPY image_math_fix.py /comfyui/custom_nodes/image_math_fix.py
 
