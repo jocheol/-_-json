@@ -76,10 +76,8 @@ RUN comfy model download \
     --filename controlnet_depth_sdxl.safetensors
 
 # 3D Animation Style LoRA
-RUN comfy model download \
-    --url https://civitai.com/api/download/models/226468?type=Model&format=SafeTensor \
-    --relative-path models/loras \
-    --filename 3d_animation_style_xl.safetensors
+RUN wget -q -O /comfyui/models/loras/3d_animation_style_xl.safetensors \
+    "https://civitai.com/api/download/models/226468?type=Model&format=SafeTensor&token=a4cb1c47d5deb6522cc4f0bc2b577e34"
 
 # IPAdapter FaceID Plus v2 SDXL
 RUN comfy model download \
