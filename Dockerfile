@@ -32,3 +32,4 @@ RUN ln -s /runpod-volume/custom_nodes/ComfyUI_InstantID /comfyui/custom_nodes/Co
     ln -s /runpod-volume/custom_nodes/ComfyUI-Impact-Pack /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
     ln -s /runpod-volume/custom_nodes/ComfyUI-Impact-Subpack /comfyui/custom_nodes/ComfyUI-Impact-Subpack && \
     ln -s /runpod-volume/custom_nodes/image_math_fix.py /comfyui/custom_nodes/image_math_fix.py
+
