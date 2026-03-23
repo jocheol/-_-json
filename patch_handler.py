@@ -27,22 +27,21 @@ new1 = '''            # --- Strip Data URI prefix if present ---
 assert old1 in content, 'PATCH 1 FAILED: download target not found'
 content = content.replace(old1, new1)
 
-# 패치 2: CSRF Referer 헤더 추가 (ComfyUI 0.3.68+ 403 fix)
+# 패치 2: /upload/image API 우회 → /comfyui/input/ 직접 쓰기 (ComfyUI 0.3.68 403 fix)
 old2 = '''            # POST request to upload the image
             response = requests.post(
                 f"http://{COMFY_HOST}/upload/image", files=files, timeout=30
-            )'''
+            )
+            response.raise_for_status()'''
 
-new2 = '''            # POST request to upload the image
-            response = requests.post(
-                f"http://{COMFY_HOST}/upload/image",
-                files=files,
-                headers={"Referer": f"http://{COMFY_HOST}/"},
-                timeout=30,
-            )'''
+new2 = '''            # Write directly to ComfyUI input directory (bypass /upload/image 403)
+            import os as _os
+            _os.makedirs("/comfyui/input", exist_ok=True)
+            with open(f"/comfyui/input/{name}", "wb") as _f:
+                _f.write(blob)'''
 
 assert old2 in content, 'PATCH 2 FAILED: upload target not found'
 content = content.replace(old2, new2)
 
 open('/handler.py', 'w').write(content)
-print('handler.py patch OK (download + CSRF fix)')
+print('handler.py patch OK (URL download + direct file write)')
