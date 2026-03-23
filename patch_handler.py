@@ -1,6 +1,7 @@
 content = open('/handler.py').read()
 
-old = '''            # --- Strip Data URI prefix if present ---
+# 패치 1: R2 URL 다운로드 지원
+old1 = '''            # --- Strip Data URI prefix if present ---
             if "," in image_data_uri:
                 # Find the comma and take everything after it
                 base64_data = image_data_uri.split(",", 1)[1]
@@ -11,7 +12,7 @@ old = '''            # --- Strip Data URI prefix if present ---
 
             blob = base64.b64decode(base64_data)  # Decode the cleaned data'''
 
-new = '''            # --- Strip Data URI prefix if present ---
+new1 = '''            # --- Strip Data URI prefix if present ---
             if image_data_uri.startswith("http://") or image_data_uri.startswith("https://"):
                 import urllib.request
                 with urllib.request.urlopen(image_data_uri) as r:
@@ -23,6 +24,25 @@ new = '''            # --- Strip Data URI prefix if present ---
                 base64_data = image_data_uri
                 blob = base64.b64decode(base64_data)'''
 
-assert old in content, 'PATCH FAILED: target string not found'
-open('/handler.py', 'w').write(content.replace(old, new))
-print('handler.py patch OK')
+assert old1 in content, 'PATCH 1 FAILED: download target not found'
+content = content.replace(old1, new1)
+
+# 패치 2: CSRF Referer 헤더 추가 (ComfyUI 0.3.68+ 403 fix)
+old2 = '''            # POST request to upload the image
+            response = requests.post(
+                f"http://{COMFY_HOST}/upload/image", files=files, timeout=30
+            )'''
+
+new2 = '''            # POST request to upload the image
+            response = requests.post(
+                f"http://{COMFY_HOST}/upload/image",
+                files=files,
+                headers={"Referer": f"http://{COMFY_HOST}/"},
+                timeout=30,
+            )'''
+
+assert old2 in content, 'PATCH 2 FAILED: upload target not found'
+content = content.replace(old2, new2)
+
+open('/handler.py', 'w').write(content)
+print('handler.py patch OK (download + CSRF fix)')
