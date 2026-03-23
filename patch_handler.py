@@ -15,7 +15,11 @@ old1 = '''            # --- Strip Data URI prefix if present ---
 new1 = '''            # --- Strip Data URI prefix if present ---
             if image_data_uri.startswith("http://") or image_data_uri.startswith("https://"):
                 import urllib.request
-                with urllib.request.urlopen(image_data_uri) as r:
+                _req = urllib.request.Request(
+                    image_data_uri,
+                    headers={"User-Agent": "Mozilla/5.0 (compatible; ComfyUI-Worker/1.0)"}
+                )
+                with urllib.request.urlopen(_req) as r:
                     blob = r.read()
             elif "," in image_data_uri:
                 base64_data = image_data_uri.split(",", 1)[1]
