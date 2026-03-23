@@ -1,5 +1,30 @@
 FROM runpod/worker-comfyui:5.5.1-base
 
+# ── handler.py 패치: URL이면 다운로드, base64면 디코딩 ────────
+RUN python3 -c "
+content = open('/handler.py').read()
+old = '''                if \",\" in image_data_uri:
+                    base64_data = image_data_uri.split(\",\", 1)[1]
+                else:
+                    # Assume it\'s already pure base64
+                    base64_data = image_data_uri
+
+                blob = base64.b64decode(base64_data)  # Decode the cleaned data'''
+new = '''                if image_data_uri.startswith(\"http://\") or image_data_uri.startswith(\"https://\"):
+                    import urllib.request
+                    with urllib.request.urlopen(image_data_uri) as r:
+                        blob = r.read()
+                elif \",\" in image_data_uri:
+                    base64_data = image_data_uri.split(\",\", 1)[1]
+                    blob = base64.b64decode(base64_data)
+                else:
+                    base64_data = image_data_uri
+                    blob = base64.b64decode(base64_data)'''
+assert old in content, 'PATCH FAILED: target string not found'
+open('/handler.py', 'w').write(content.replace(old, new))
+print('handler.py patch OK')
+"
+
 # ── 1. 최소 시스템 의존성만 ───────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake python3-dev git \
@@ -21,7 +46,6 @@ RUN git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Pack /tmp/imp
 RUN rm -rf /comfyui/models && \
     ln -s /runpod-volume/models /comfyui/models
 
-# 커스텀 노드는 개별 심링크
 RUN ln -s /runpod-volume/custom_nodes/ComfyUI_InstantID /comfyui/custom_nodes/ComfyUI_InstantID && \
     ln -s /runpod-volume/custom_nodes/ComfyUI_IPAdapter_plus /comfyui/custom_nodes/ComfyUI_IPAdapter_plus && \
     ln -s /runpod-volume/custom_nodes/comfyui_controlnet_aux /comfyui/custom_nodes/comfyui_controlnet_aux && \
