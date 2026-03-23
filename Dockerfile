@@ -4,7 +4,7 @@ FROM runpod/worker-comfyui:5.5.1-base
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake python3-dev \
     && pip install --no-cache-dir \
-    insightface==0.7.3 onnxruntime-gpu facexlib ultralytics piexif \
+    insightface==0.7.3 onnxruntime-gpu facexlib ultralytics piexif dill \
     && apt-get purge -y build-essential cmake python3-dev \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache/pip
