@@ -2,7 +2,7 @@ FROM runpod/worker-comfyui:5.1.0-base
 
 # ── handler.py 패치 ───────────────────────────────────────────
 COPY patch_handler.py /tmp/patch_handler.py
-RUN python3 /tmp/patch_handler.py && rm /tmp/patch_handler.py
+RUN python3 /tmp/patch_handler.py && python3 -m py_compile /handler.py && rm /tmp/patch_handler.py
 
 # ── 1. 시스템 의존성 + Python 패키지 ──────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
