@@ -33,5 +33,39 @@ class LatentNaNFix:
                  for k, v in samples.items()}
         return (fixed,)
 
-NODE_CLASS_MAPPINGS = {"ImageMultiply": ImageMultiply, "ImageSubtract": ImageSubtract, "LatentNaNFix": LatentNaNFix}
-NODE_DISPLAY_NAME_MAPPINGS = {"ImageMultiply": "Image Multiply", "ImageSubtract": "Image Subtract", "LatentNaNFix": "Latent NaN Fix"}
+class LatentNaNFallback:
+    """KSampler 출력 latent에서 NaN/Inf를 원본 encoded latent(VAEEncode)로 대체.
+    NaN 위치 → fallback 값 사용, 정상 위치 → sampler 값 유지."""
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "samples": ("LATENT",),
+            "fallback": ("LATENT",),
+        }}
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "execute"
+    CATEGORY = "essentials/latent"
+    def execute(self, samples, fallback):
+        s = samples["samples"]
+        f = fallback["samples"]
+        if s.shape != f.shape:
+            import torch.nn.functional as F
+            f = F.interpolate(f, size=s.shape[-2:], mode="bilinear", align_corners=False)
+        bad = torch.isnan(s) | torch.isinf(s)
+        fixed_s = torch.where(bad, f, s)
+        result = {k: v for k, v in samples.items()}
+        result["samples"] = fixed_s
+        return (result,)
+
+NODE_CLASS_MAPPINGS = {
+    "ImageMultiply": ImageMultiply,
+    "ImageSubtract": ImageSubtract,
+    "LatentNaNFix": LatentNaNFix,
+    "LatentNaNFallback": LatentNaNFallback,
+}
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "ImageMultiply": "Image Multiply",
+    "ImageSubtract": "Image Subtract",
+    "LatentNaNFix": "Latent NaN Fix",
+    "LatentNaNFallback": "Latent NaN Fallback",
+}
