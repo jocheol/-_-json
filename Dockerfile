@@ -29,6 +29,9 @@ RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
 
 # ── 3. Custom Node 의존성 설치 ────────────────────────────────
 RUN pip install --no-cache-dir \
+    -r /comfyui/custom_nodes/ComfyUI_InstantID/requirements.txt \
+    -r /comfyui/custom_nodes/comfyui_controlnet_aux/requirements.txt \
+    -r /comfyui/custom_nodes/ComfyUI_essentials/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Pack/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Subpack/requirements.txt \
     && rm -rf /root/.cache/pip
