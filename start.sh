@@ -19,3 +19,4 @@ else
     python -u /comfyui/main.py --disable-auto-launch --disable-metadata --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
     python -u /handler.py
 fi
+
