@@ -47,5 +47,18 @@ new2 = '''            # Write directly to ComfyUI input directory (bypass /uploa
 assert old2 in content, 'PATCH 2 FAILED: upload target not found'
 content = content.replace(old2, new2)
 
+# 패치 3: BUCKET_NAME 환경변수로 버킷명 고정 + 구버전 호환 fallback
+old3 = '                s3_url = rp_upload.upload_image(job_id, temp_file_path)\n'
+new3 = (
+    '                bucket = os.getenv("BUCKET_NAME", "dreambook-assets")\n'
+    '                try:\n'
+    '                    s3_url = rp_upload.upload_image(job_id, temp_file_path, bucket_name=bucket)\n'
+    '                except TypeError:\n'
+    '                    os.environ["BUCKET_NAME"] = bucket\n'
+    '                    s3_url = rp_upload.upload_image(job_id, temp_file_path)\n'
+)
+assert old3 in content, 'PATCH 3 FAILED: upload_image target not found'
+content = content.replace(old3, new3, 1)
+
 open('/handler.py', 'w').write(content)
-print('handler.py patch OK (URL download + direct file write)')
+print('handler.py patch OK (URL download + direct file write + BUCKET_NAME fix)')
