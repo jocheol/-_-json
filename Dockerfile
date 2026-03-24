@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ── 2. Custom Nodes (빌드 타임 GitHub 설치) ───────────────────
 RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         /comfyui/custom_nodes/ComfyUI_IPAdapter_plus && \
-    git clone --depth=1 https://github.com/ZHO-ZHO-ZHO/ComfyUI_InstantID \
+    git clone --depth=1 https://github.com/cubiq/ComfyUI_InstantID \
         /comfyui/custom_nodes/ComfyUI_InstantID && \
     git clone --depth=1 https://github.com/Fannovel16/comfyui_controlnet_aux \
         /comfyui/custom_nodes/comfyui_controlnet_aux && \
