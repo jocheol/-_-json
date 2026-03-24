@@ -20,5 +20,18 @@ class ImageSubtract:
     def execute(self, image1, image2):
         return (torch.clamp(image1 - image2, 0, 1),)
 
-NODE_CLASS_MAPPINGS = {"ImageMultiply": ImageMultiply, "ImageSubtract": ImageSubtract}
-NODE_DISPLAY_NAME_MAPPINGS = {"ImageMultiply": "Image Multiply", "ImageSubtract": "Image Subtract"}
+class LatentNaNFix:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"samples": ("LATENT",)}}
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "execute"
+    CATEGORY = "essentials/latent"
+    def execute(self, samples):
+        fixed = {k: torch.nan_to_num(v, nan=0.0, posinf=1.0, neginf=0.0)
+                 if isinstance(v, torch.Tensor) else v
+                 for k, v in samples.items()}
+        return (fixed,)
+
+NODE_CLASS_MAPPINGS = {"ImageMultiply": ImageMultiply, "ImageSubtract": ImageSubtract, "LatentNaNFix": LatentNaNFix}
+NODE_DISPLAY_NAME_MAPPINGS = {"ImageMultiply": "Image Multiply", "ImageSubtract": "Image Subtract", "LatentNaNFix": "Latent NaN Fix"}
