@@ -46,15 +46,16 @@ class LatentNaNFallback:
     FUNCTION = "execute"
     CATEGORY = "essentials/latent"
     def execute(self, samples, fallback):
-        s = samples["samples"]
+        s = samples["samples"].clone()
         f = fallback["samples"]
         if s.shape != f.shape:
             import torch.nn.functional as F
             f = F.interpolate(f, size=s.shape[-2:], mode="bilinear", align_corners=False)
         bad = torch.isnan(s) | torch.isinf(s)
-        fixed_s = torch.where(bad, f, s)
+        if bad.any():
+            s[bad] = f[bad]  # boolean indexing: NaN 전파 없이 안전하게 대체
         result = {k: v for k, v in samples.items()}
-        result["samples"] = fixed_s
+        result["samples"] = s
         return (result,)
 
 NODE_CLASS_MAPPINGS = {
