@@ -13,9 +13,9 @@ comfy-manager-set-mode offline || echo "worker-comfyui - Could not set ComfyUI-M
 : "${COMFY_LOG_LEVEL:=DEBUG}"
 
 if [ "$SERVE_API_LOCALLY" == "true" ]; then
-    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --listen --bf16-unet --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
+    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --listen --bf16-unet --highvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
     python -u /handler.py --rp_serve_api --rp_api_host=0.0.0.0
 else
-    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --bf16-unet --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
+    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --bf16-unet --highvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
     python -u /handler.py
 fi
