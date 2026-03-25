@@ -38,6 +38,8 @@ MODELS = [
      '/comfyui/models/insightface/models/antelopev2/glintr100.onnx'),
     ('models/insightface/models/antelopev2/scrfd_10g_bnkps.onnx',
      '/comfyui/models/insightface/models/antelopev2/scrfd_10g_bnkps.onnx'),
+    ('models/vae/sdxl_vae_fp16_fix.safetensors',
+     '/comfyui/models/vae/sdxl_vae_fp16_fix.safetensors'),
 ]
 
 _print_lock = threading.Lock()
