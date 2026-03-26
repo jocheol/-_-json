@@ -66,3 +66,19 @@ content = content.replace(old3, new3, 1)
 
 open('/handler.py', 'w').write(content)
 print('handler.py patch OK (URL download + direct file write + BUCKET_NAME fix)')
+
+
+# 패치 4: ComfyUI 서버 시작 대기 시간(500회 -> 4000회, 약 200초) 상향
+old4_loop = 'for _ in range(500):'
+new4_loop = 'for _ in range(4000):'
+old4_msg = 'after 500 attempts'
+new4_msg = 'after 4000 attempts'
+
+if old4_loop in content:
+    content = content.replace(old4_loop, new4_loop)
+    content = content.replace(old4_msg, new4_msg)
+    print('handler.py patch 4 (Timeout Retry Increase to 4000) OK')
+else:
+    print('WARNING: PATCH 4 FAILED - Could not find the 500 attempts loop.')
+
+open('/handler.py', 'w').write(content)
