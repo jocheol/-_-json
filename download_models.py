@@ -40,6 +40,12 @@ MODELS = [
      '/comfyui/models/insightface/models/antelopev2/scrfd_10g_bnkps.onnx'),
     ('models/vae/sdxl_vae_fp16_fix.safetensors',
      '/comfyui/models/vae/sdxl_vae_fp16_fix.safetensors'),
+    ('models/zoedepth-nyu-kitti/config.json',
+     '/root/.cache/huggingface/hub/models--Intel--zoedepth-nyu-kitti/snapshots/main/config.json'),
+    ('models/zoedepth-nyu-kitti/model.safetensors',
+     '/root/.cache/huggingface/hub/models--Intel--zoedepth-nyu-kitti/snapshots/main/model.safetensors'),
+    ('models/zoedepth-nyu-kitti/preprocessor_config.json',
+     '/root/.cache/huggingface/hub/models--Intel--zoedepth-nyu-kitti/snapshots/main/preprocessor_config.json'),
 ]
 
 _print_lock = threading.Lock()
@@ -105,6 +111,13 @@ def main():
                 *_, key, dst = futures[f]
                 log(f'[ERROR] {os.path.basename(dst)}: {f.exception()}')
                 raise f.exception()
+
+    # ZoeDepth HF 캐시 refs 구조 생성
+    refs_dir = '/root/.cache/huggingface/hub/models--Intel--zoedepth-nyu-kitti/refs'
+    os.makedirs(refs_dir, exist_ok=True)
+    with open(os.path.join(refs_dir, 'main'), 'w') as f:
+        f.write('main')
+    log('[ZoeDepth] HF 캐시 refs 생성 완료')
 
     log('[ALL] 모델 다운로드 완료')
 
