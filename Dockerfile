@@ -8,6 +8,10 @@ RUN python3 /tmp/patch_handler.py && python3 -m py_compile /handler.py && rm /tm
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake python3-dev git \
     && pip install --no-cache-dir \
+    "numpy==1.26.4" \
+    "opencv-python-headless==4.9.0.80" \
+    "opencv-python==4.9.0.80" \
+    "opencv-contrib-python==4.9.0.80" \
     insightface==0.7.3 onnxruntime-gpu facexlib ultralytics piexif dill boto3 \
     && apt-get purge -y build-essential cmake python3-dev \
     && apt-get autoremove -y \
