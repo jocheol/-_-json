@@ -14,13 +14,24 @@ old1 = '''            # --- Strip Data URI prefix if present ---
 
 new1 = '''            # --- Strip Data URI prefix if present ---
             if image_data_uri.startswith("http://") or image_data_uri.startswith("https://"):
-                import urllib.request
-                _req = urllib.request.Request(
-                    image_data_uri,
-                    headers={"User-Agent": "Mozilla/5.0 (compatible; ComfyUI-Worker/1.0)"}
-                )
-                with urllib.request.urlopen(_req) as r:
-                    blob = r.read()
+                import urllib.request, time as _time
+                _last_err = None
+                for _attempt in range(3):
+                    try:
+                        _req = urllib.request.Request(
+                            image_data_uri,
+                            headers={"User-Agent": "Mozilla/5.0 (compatible; ComfyUI-Worker/1.0)"}
+                        )
+                        with urllib.request.urlopen(_req) as r:
+                            blob = r.read()
+                        _last_err = None
+                        break
+                    except Exception as _e:
+                        _last_err = _e
+                        if _attempt < 2:
+                            _time.sleep(1)
+                if _last_err:
+                    raise _last_err
             elif "," in image_data_uri:
                 base64_data = image_data_uri.split(",", 1)[1]
                 blob = base64.b64decode(base64_data)
