@@ -17,9 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache/pip
 
-# ── 베이스 이미지 ComfyUI-Manager 제거 (부팅 시 108초 딜레이 원인) ────
-RUN rm -rf /comfyui/custom_nodes/ComfyUI-Manager
-
 # ── 2. Custom Nodes (빌드 타임 GitHub 설치) ───────────────────
 RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         /comfyui/custom_nodes/ComfyUI_IPAdapter_plus && \
@@ -29,9 +26,9 @@ RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         /comfyui/custom_nodes/comfyui_controlnet_aux && \
     git clone --depth=1 https://github.com/cubiq/ComfyUI_essentials \
         /comfyui/custom_nodes/ComfyUI_essentials && \
-    git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
+    git clone --depth=1 --branch V8.28.2 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
         /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
-    git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
+    git clone --depth=1 --branch V1.3.5 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
         /comfyui/custom_nodes/ComfyUI-Impact-Subpack
 
 # ── 3. Custom Node 의존성 설치 ────────────────────────────────
@@ -48,5 +45,10 @@ COPY image_math_fix.py /comfyui/custom_nodes/image_math_fix.py
 COPY download_models.py /download_models.py
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
+# ── 5. ComfyUI-Manager 의존성 검사 무력화 (부팅 108초 딜레이 제거) ──
+# Manager 폴더는 유지 (Impact Pack 의존), requirements.txt/install.py만 삭제
+RUN find /comfyui/custom_nodes -name "requirements.txt" -type f -delete && \
+    find /comfyui/custom_nodes -name "install.py" -type f -delete
 
 CMD ["/start.sh"]
