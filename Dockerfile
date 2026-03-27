@@ -26,9 +26,9 @@ RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         /comfyui/custom_nodes/comfyui_controlnet_aux && \
     git clone --depth=1 https://github.com/cubiq/ComfyUI_essentials \
         /comfyui/custom_nodes/ComfyUI_essentials && \
-    git clone --depth=1 --branch V8.28.2 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
+    git clone --depth=1 --branch 8.28 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
         /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
-    git clone --depth=1 --branch V1.3.5 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
+    git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
         /comfyui/custom_nodes/ComfyUI-Impact-Subpack
 
 # ── 3. Custom Node 의존성 설치 ────────────────────────────────
