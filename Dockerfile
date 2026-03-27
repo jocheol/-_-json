@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache/pip
 
+# ── 베이스 이미지 ComfyUI-Manager 제거 (부팅 시 108초 딜레이 원인) ────
+RUN rm -rf /comfyui/custom_nodes/ComfyUI-Manager
+
 # ── 2. Custom Nodes (빌드 타임 GitHub 설치) ───────────────────
 RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         /comfyui/custom_nodes/ComfyUI_IPAdapter_plus && \
