@@ -13,11 +13,11 @@ comfy-manager-set-mode offline || echo "worker-comfyui - Could not set ComfyUI-M
 : "${COMFY_LOG_LEVEL:=DEBUG}"
 
 if [ "$SERVE_API_LOCALLY" == "true" ]; then
-    # --bf16-unet: UNet NaN 방지 / --fp32-vae: 내장 VAE fp32 강제로 VAE NaN 방지 / --normalvram: VRAM 자동관리
-    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --listen --bf16-unet --fp32-vae --normalvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
+    # --bf16-unet: UNet NaN 방지 / --fp32-vae: 내장 VAE fp32 강제로 VAE NaN 방지 / --highvram: 모델 VRAM 상주
+    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --listen --bf16-unet --fp32-vae --highvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
     python -u /handler.py --rp_serve_api --rp_api_host=0.0.0.0
 else
-    # --bf16-unet: UNet NaN 방지 / --fp32-vae: 내장 VAE fp32 강제로 VAE NaN 방지 / --normalvram: VRAM 자동관리
-    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --bf16-unet --fp32-vae --normalvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
+    # --bf16-unet: UNet NaN 방지 / --fp32-vae: 내장 VAE fp32 강제로 VAE NaN 방지 / --highvram: 모델 VRAM 상주
+    python -u /comfyui/main.py --disable-auto-launch --disable-metadata --bf16-unet --fp32-vae --highvram --verbose "${COMFY_LOG_LEVEL}" --log-stdout &
     python -u /handler.py
 fi
