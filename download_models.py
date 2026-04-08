@@ -16,6 +16,8 @@ MODELS = [
      '/comfyui/models/controlnet/instantid_sdxl.safetensors'),
     ('models/controlnet/controlnet_depth_sdxl.safetensors',
      '/comfyui/models/controlnet/controlnet_depth_sdxl.safetensors'),
+    ('models/controlnet/controlnet_canny_xl.safetensors',
+     '/comfyui/models/controlnet/controlnet_canny_xl.safetensors'),
     ('models/instantid/ip-adapter.bin',
      '/comfyui/models/instantid/ip-adapter.bin'),
     ('models/ipadapter/ip-adapter-faceid-plusv2_sdxl.bin',
