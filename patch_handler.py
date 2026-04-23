@@ -60,12 +60,20 @@ content = content.replace(old2, new2)
 
 # 패치 3: BUCKET_NAME 환경변수로 버킷명 고정 (단일 라인 → 들여쓰기 무관)
 old3 = 's3_url = rp_upload.upload_image(job_id, temp_file_path)'
-new3 = 's3_url = rp_upload.upload_image(job_id, temp_file_path, bucket_name=os.getenv("BUCKET_NAME", "dreambook-assets"))'
+new3 = 's3_url = rp_upload.upload_image(_upload_prefix, temp_file_path, bucket_name=os.getenv("BUCKET_NAME", "dreambook-assets"))'
 assert old3 in content, 'PATCH 3 FAILED: upload_image target not found'
 content = content.replace(old3, new3, 1)
 
+# 패치 5: R2 키에 worker/<yyyymmdd>/ prefix 주입 (Phase 3 개편, KST 기준)
+old5 = '    job_id = job["id"]'
+new5 = '''    job_id = job["id"]
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    _upload_prefix = f"worker/{_dt.now(_tz(_td(hours=9))).strftime('%Y%m%d')}/{job_id}"'''
+assert old5 in content, 'PATCH 5 FAILED: job_id declaration not found'
+content = content.replace(old5, new5, 1)
+
 open('/handler.py', 'w').write(content)
-print('handler.py patch OK (URL download + direct file write + BUCKET_NAME fix)')
+print('handler.py patch OK (URL download + direct file write + BUCKET_NAME fix + worker-prefix)')
 
 
 # 패치 4: ComfyUI 서버 시작 대기 시간(500회 -> 4000회, 약 200초) 상향
