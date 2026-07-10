@@ -76,17 +76,11 @@ open('/handler.py', 'w').write(content)
 print('handler.py patch OK (URL download + direct file write + BUCKET_NAME fix + worker-prefix)')
 
 
-# 패치 4: ComfyUI 서버 시작 대기 시간(500회 -> 4000회, 약 200초) 상향
-old4_loop = 'for _ in range(500):'
-new4_loop = 'for _ in range(4000):'
-old4_msg = 'after 500 attempts'
-new4_msg = 'after 4000 attempts'
-
-if old4_loop in content:
-    content = content.replace(old4_loop, new4_loop)
-    content = content.replace(old4_msg, new4_msg)
-    print('handler.py patch 4 (Timeout Retry Increase to 4000) OK')
-else:
-    print('WARNING: PATCH 4 FAILED - Could not find the 500 attempts loop.')
+# 패치 4: ComfyUI 서버 시작 대기 상향 (worker-comfyui 5.1.0: 상수 선언 방식, 500회×50ms=25초 → 4000회=200초)
+old4 = 'COMFY_API_AVAILABLE_MAX_RETRIES = 500'
+new4 = 'COMFY_API_AVAILABLE_MAX_RETRIES = 4000'
+assert old4 in content, 'PATCH 4 FAILED: COMFY_API_AVAILABLE_MAX_RETRIES = 500 not found'
+content = content.replace(old4, new4, 1)
+print('handler.py patch 4 (COMFY_API_AVAILABLE_MAX_RETRIES 500 -> 4000) OK')
 
 open('/handler.py', 'w').write(content)

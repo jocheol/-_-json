@@ -36,15 +36,20 @@ RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
         checkout 6ad6b35a4df250d14cb2abf0808c9ffedf59f747
 
 # ── 3. Custom Node 의존성 설치 ────────────────────────────────
-RUN pip install --no-cache-dir \
+# constraints로 핵심 스택 고정: custom node reqs(특히 ReActor·controlnet_aux의 rembg/scipy)가
+# numpy 2.x·scipy 1.16+·CUDA13용 onnxruntime으로 올려 ComfyUI 부팅이 깨지는 것 방지 (2026-07-10 장애)
+RUN printf 'numpy==1.26.4\nscipy==1.13.1\nopencv-python==4.9.0.80\nopencv-python-headless==4.9.0.80\nopencv-contrib-python==4.9.0.80\nonnxruntime-gpu==1.19.2\nonnxruntime==1.19.2\n' > /tmp/constraints.txt \
+    && PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir \
     -r /comfyui/custom_nodes/ComfyUI_InstantID/requirements.txt \
     -r /comfyui/custom_nodes/comfyui_controlnet_aux/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI_essentials/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Pack/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Subpack/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-ReActor/requirements.txt \
-    && pip install --no-cache-dir "numpy==1.26.4" \
-    && rm -rf /root/.cache/pip
+    && pip uninstall -y onnxruntime onnxruntime-gpu \
+    && pip install --no-cache-dir "onnxruntime-gpu==1.19.2" "numpy==1.26.4" "scipy==1.13.1" \
+    && python3 -c "from scipy import integrate; import numpy, cv2, onnxruntime; print('[SANITY]', numpy.__version__, cv2.__version__, onnxruntime.__version__, onnxruntime.get_available_providers())" \
+    && rm -rf /root/.cache/pip /tmp/constraints.txt
 
 # ── 4. 로컬 파일 복사 ─────────────────────────────────────────
 COPY image_math_fix.py /comfyui/custom_nodes/image_math_fix.py
