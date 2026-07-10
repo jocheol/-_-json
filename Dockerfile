@@ -29,7 +29,11 @@ RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_IPAdapter_plus \
     git clone --depth=1 --branch 8.28 https://github.com/ltdrdata/ComfyUI-Impact-Pack \
         /comfyui/custom_nodes/ComfyUI-Impact-Pack && \
     git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Subpack \
-        /comfyui/custom_nodes/ComfyUI-Impact-Subpack
+        /comfyui/custom_nodes/ComfyUI-Impact-Subpack && \
+    git clone https://github.com/Gourieff/ComfyUI-ReActor \
+        /comfyui/custom_nodes/ComfyUI-ReActor && \
+    git -C /comfyui/custom_nodes/ComfyUI-ReActor \
+        checkout 6ad6b35a4df250d14cb2abf0808c9ffedf59f747
 
 # ── 3. Custom Node 의존성 설치 ────────────────────────────────
 RUN pip install --no-cache-dir \
@@ -38,6 +42,8 @@ RUN pip install --no-cache-dir \
     -r /comfyui/custom_nodes/ComfyUI_essentials/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Pack/requirements.txt \
     -r /comfyui/custom_nodes/ComfyUI-Impact-Subpack/requirements.txt \
+    -r /comfyui/custom_nodes/ComfyUI-ReActor/requirements.txt \
+    && pip install --no-cache-dir "numpy==1.26.4" \
     && rm -rf /root/.cache/pip
 
 # ── 4. 로컬 파일 복사 ─────────────────────────────────────────
